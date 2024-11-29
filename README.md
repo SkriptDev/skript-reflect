@@ -1,21 +1,12 @@
 # skript-reflect
 
-This fork of [skript-mirror](https://github.com/btk5h/skript-mirror) aims to fix
-multiple issues that I believe have been present for too long, and implement some long-wanted features.
+This fork of [skript-reflect](https://github.com/SkriptLang/skript-reflect) aims to work on [**Skript-Three**](https://github.com/SkriptDev/Skript).
 
 Documentation: https://tpgamesnl.gitbook.io/skript-reflect
 
-Source code: https://github.com/TPGamesNL/skript-reflect
+Source code: https://github.com/SkriptLang/skript-reflect
 
-Downloads: [releases](https://github.com/TPGamesNL/skript-reflect/releases) or
-[actions](https://github.com/TPGamesNL/skript-reflect/actions?query=event%3Apush+is%3Asuccess+actor%3ATPGamesNL) \(not stable\)
-
-Discord: https://discord.gg/jDW8UbD
+Downloads: [releases](https://github.com/SkriptDev/skript-reflect/releases)
 
 ## What's been changed in this fork:
-* Added custom events
-* Support for more Java versions \(Java 13+, OpenJ9\)
-* Support for listening to asynchronous events
-* Class proxy fixes + documentation
-* Fixed multiple issues with local variables
-* \+ much more
+- Just the removal of an ItemType -> ItemStack converter.
