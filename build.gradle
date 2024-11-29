@@ -19,6 +19,15 @@ repositories {
   maven { url 'https://jitpack.io' }
 }
 
+dependencies {
+  // Paper
+  compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+  // Skript
+  compileOnly('com.github.SkriptDev:Skript:3.0.0-Beta1')
+  // bStats
+  implementation(group: 'org.bstats', name: 'bstats-bukkit', version: '3.0.2')
+}
+
 processResources {
   filter ReplaceTokens, tokens: [
     "version": version
@@ -38,11 +47,4 @@ build {
       options.compilerArgs.add("-Xlint:deprecation")
     }
   }
-}
-
-dependencies {
-  // Paper
-  compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
-  // Skript
-  compileOnly('com.github.SkriptDev:Skript:3.0.0-Beta1')
 }
