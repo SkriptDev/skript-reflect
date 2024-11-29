@@ -31,6 +31,15 @@ compileJava   {
   options.encoding = 'UTF-8'
 }
 
+build {
+  tasks.withType(JavaCompile).tap {
+    configureEach {
+      options.compilerArgs.add("-Xlint:unchecked")
+      options.compilerArgs.add("-Xlint:deprecation")
+    }
+  }
+}
+
 dependencies {
   // Paper
   compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
