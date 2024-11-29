@@ -4,9 +4,13 @@ This fork of [skript-reflect](https://github.com/SkriptLang/skript-reflect) aims
 
 Documentation: https://tpgamesnl.gitbook.io/skript-reflect
 
-Source code: https://github.com/SkriptLang/skript-reflect
-
 Downloads: [releases](https://github.com/SkriptDev/skript-reflect/releases)
 
+## Requirements:
+- Java 21+
+- PaperMC server (CraftBukkit/Spigot not supported)
+- [**Skript-Three**](https://github.com/SkriptDev/Skript)
+
 ## What's been changed in this fork:
-- Just the removal of an ItemType -> ItemStack converter.
+- Removal of an ItemType -> ItemStack converter.
+- Some internal cleanup
