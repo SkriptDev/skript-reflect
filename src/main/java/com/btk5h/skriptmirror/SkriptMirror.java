@@ -5,6 +5,10 @@ import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.classes.ClassInfo;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.util.Version;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.DrilldownPie;
+import org.bstats.charts.SimplePie;
+import org.bstats.charts.SingleLineChart;
 import org.skriptlang.reflect.syntax.condition.elements.StructCustomCondition;
 import org.skriptlang.reflect.syntax.effect.elements.StructCustomEffect;
 import org.skriptlang.reflect.syntax.event.elements.StructCustomEvent;
@@ -44,9 +48,9 @@ public class SkriptMirror extends JavaPlugin {
       return;
     }
 
-    if (Skript.getVersion().isSmallerThan(new Version(2, 7))) {
+    if (Skript.getVersion().isSmallerThan(new Version(2, 9999))) {
       getLogger().severe("");
-      getLogger().severe("Your version of Skript (" + Skript.getVersion() + ") is not supported, at least Skript 2.7 is required to run this version of skript-reflect.");
+      getLogger().severe("Your version of Skript (" + Skript.getVersion() + ") is not supported, at least Skript 3.0+ is required to run this version of skript-reflect.");
       getLogger().severe("");
       Bukkit.getPluginManager().disablePlugin(this);
       return;
@@ -81,7 +85,7 @@ public class SkriptMirror extends JavaPlugin {
 
     Metrics metrics = new Metrics(this, 10157);
 
-    metrics.addCustomChart(new Metrics.DrilldownPie("skript_version", () -> {
+    metrics.addCustomChart(new DrilldownPie("skript_version", () -> {
       Map<String, Map<String, Integer>> map = new HashMap<>();
 
       Version version = Skript.getVersion();
@@ -93,24 +97,24 @@ public class SkriptMirror extends JavaPlugin {
       return map;
     }));
 
-    metrics.addCustomChart(new Metrics.SingleLineChart("java_calls_made", () -> {
+    metrics.addCustomChart(new SingleLineChart("java_calls_made", () -> {
       int i = ExprJavaCall.javaCallsMade;
       ExprJavaCall.javaCallsMade = 0;
       return i;
     }));
 
-    metrics.addCustomChart(new Metrics.SimplePie("custom_conditions_used",
+    metrics.addCustomChart(new SimplePie("custom_conditions_used",
       () -> "" + StructCustomCondition.customConditionsUsed));
-    metrics.addCustomChart(new Metrics.SimplePie("custom_effects_used",
+    metrics.addCustomChart(new SimplePie("custom_effects_used",
       () -> "" + StructCustomEffect.customEffectsUsed));
-    metrics.addCustomChart(new Metrics.SimplePie("custom_events_used",
+    metrics.addCustomChart(new SimplePie("custom_events_used",
       () -> "" + StructCustomEvent.customEventsUsed));
-    metrics.addCustomChart(new Metrics.SimplePie("custom_expressions_used",
+    metrics.addCustomChart(new SimplePie("custom_expressions_used",
       () -> "" + StructCustomExpression.customExpressionsUsed));
 
-    metrics.addCustomChart(new Metrics.SimplePie("proxies_used",
+    metrics.addCustomChart(new SimplePie("proxies_used",
       () -> "" + ExprProxy.proxiesUsed));
-    metrics.addCustomChart(new Metrics.SimplePie("sections_used",
+    metrics.addCustomChart(new SimplePie("sections_used",
       () -> "" + SecSection.sectionsUsed));
 
   }

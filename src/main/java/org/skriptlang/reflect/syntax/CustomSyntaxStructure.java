@@ -199,6 +199,8 @@ public abstract class CustomSyntaxStructure<T extends CustomSyntaxStructure.Synt
     return false;
   }
 
+  @SuppressWarnings({"UnstableApiUsage", "deprecation"})
+  // TODO gotta figure out the entry container thing
   protected SectionNode[] getParseNode() {
     SectionNode parseNode = getEntryContainer().getOptional("parse", SectionNode.class, false);
     SectionNode safeParseNode = getEntryContainer().getOptional("safe parse", SectionNode.class, false);

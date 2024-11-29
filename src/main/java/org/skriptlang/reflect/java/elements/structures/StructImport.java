@@ -17,7 +17,7 @@ import com.btk5h.skriptmirror.util.SkriptMirrorUtil;
 import com.btk5h.skriptmirror.util.SkriptReflection;
 import com.btk5h.skriptmirror.util.SkriptUtil;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.entry.EntryContainer;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
@@ -55,9 +55,11 @@ public class StructImport extends Structure {
   @Override
   public boolean init(Literal<?>[] args, int matchedPattern, ParseResult parseResult, EntryContainer entryContainer) {
     this.script = getParser().getCurrentScript();
-    getEntryContainer().getSource().forEach(node -> registerImport(Optional.ofNullable(node.getKey())
-        .map(ScriptLoader::replaceOptions)
-        .orElse(null), script));
+    if (entryContainer != null) {
+      entryContainer.getSource().forEach(node -> registerImport(Optional.ofNullable(node.getKey())
+          .map(ScriptLoader::replaceOptions)
+          .orElse(null), script));
+    }
     updateImports();
     return true;
   }
@@ -189,7 +191,7 @@ public class StructImport extends Structure {
         return false;
       }
 
-      className = parseResult.regexes.get(0).group();
+      className = parseResult.regexes.getFirst().group();
 
       return registerImport(className, null);
     }

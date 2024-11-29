@@ -1,11 +1,11 @@
 package com.btk5h.skriptmirror.util;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.classes.ClassInfo;
 import com.btk5h.skriptmirror.JavaType;
 import com.btk5h.skriptmirror.Null;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -66,8 +66,8 @@ public final class JavaUtil {
    */
   public static Stream<Field> fields(Class<?> cls) {
     return Stream.concat(
-      Arrays.stream(cls.getFields()),
-      Arrays.stream(cls.getDeclaredFields())
+        Arrays.stream(cls.getFields()),
+        Arrays.stream(cls.getDeclaredFields())
     ).distinct();
   }
 
@@ -77,8 +77,8 @@ public final class JavaUtil {
    */
   public static Stream<Method> methods(Class<?> cls) {
     return Stream.concat(
-      Arrays.stream(cls.getMethods()),
-      Arrays.stream(cls.getDeclaredMethods())
+        Arrays.stream(cls.getMethods()),
+        Arrays.stream(cls.getDeclaredMethods())
     ).distinct();
   }
 
@@ -166,7 +166,7 @@ public final class JavaUtil {
           what = ((Number) what).shortValue();
         }
 
-        Array.set(newArray, i , what);
+        Array.set(newArray, i, what);
       }
     }
 
@@ -175,8 +175,8 @@ public final class JavaUtil {
 
   /**
    * Gets the array depth of a given class, for example:<br>
-   *   Object[] -> 1<br>
-   *   Object[][][] -> 3
+   * Object[] -> 1<br>
+   * Object[][][] -> 3
    */
   public static int getArrayDepth(Class<?> cls) {
     int depth = 0;
@@ -204,6 +204,7 @@ public final class JavaUtil {
 
   /**
    * An functional interface with an input and output that may throw an {@link Exception}.
+   *
    * @param <T> the input of the function.
    * @param <R> the return value of the function.
    */
@@ -319,8 +320,8 @@ public final class JavaUtil {
 
     // coerce single character strings to chars
     if (object instanceof String
-      && (to == char.class || to == Character.class)
-      && ((String) object).length() == 1) {
+        && (to == char.class || to == Character.class)
+        && ((String) object).length() == 1) {
       return true;
     }
 
@@ -363,19 +364,14 @@ public final class JavaUtil {
 
     // coerce arrays of numeric types
     if (to.isArray()
-      && JavaUtil.getArrayDepth(to) == JavaUtil.getArrayDepth(object.getClass())
-      && JavaUtil.isNumericClass(JavaUtil.getBaseComponent(to))) {
+        && JavaUtil.getArrayDepth(to) == JavaUtil.getArrayDepth(object.getClass())
+        && JavaUtil.isNumericClass(JavaUtil.getBaseComponent(to))) {
       return JavaUtil.convertNumericArray(object, JavaUtil.getBaseComponent(to));
     }
 
     // coerce single character strings to chars
     if (object instanceof String && (to == char.class || to == Character.class)) {
       return ((String) object).charAt(0);
-    }
-
-    // coerce a Skript ItemType to an ItemStack
-    if (object instanceof ItemType && to == ItemStack.class) {
-      return ((ItemType) object).getRandom();
     }
 
     // coerce javatypes and classinfos into classes

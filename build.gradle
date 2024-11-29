@@ -1,24 +1,29 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
+plugins {
+  id 'com.gradleup.shadow' version '8.3.5'
+  id 'java'
+}
+
 group 'com.btk5h.skript-mirror'
 version '2.5.1'
 
-apply plugin: 'java'
 
 repositories {
   mavenCentral()
-  maven {
-    url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
-  }
-  maven {
-    url 'https://oss.sonatype.org/content/groups/public/'
-  }
-  maven {
-    url 'https://repo.destroystokyo.com/repository/maven-public/'
-  }
-  maven {
-    url 'https://repo.skriptlang.org/releases'
-  }
+  // Paper
+  maven { url 'https://repo.papermc.io/repository/maven-public/' }
+  // JitPack
+  maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+  // Paper
+  compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+  // Skript
+  compileOnly('com.github.SkriptDev:Skript:3.0.0-Beta1')
+  // bStats
+  implementation(group: 'org.bstats', name: 'bstats-bukkit', version: '3.0.2')
 }
 
 processResources {
@@ -28,13 +33,22 @@ processResources {
 }
 
 compileJava   {
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+  sourceCompatibility = 21
+  targetCompatibility = 21
   options.encoding = 'UTF-8'
 }
 
-dependencies {
-  implementation 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
-  implementation 'com.github.SkriptLang:Skript:2.9.0'
-  implementation 'org.eclipse.jdt:org.eclipse.jdt.annotation:1.1.0'
+shadowJar {
+  archiveFileName = project.name + "-" + project.version + ".jar"
+  relocate("org.bstats", "com.btk5h.skriptmirror.metrics")
+}
+
+build {
+  dependsOn(shadowJar)
+  tasks.withType(JavaCompile).tap {
+    configureEach {
+      //options.compilerArgs.add("-Xlint:unchecked")
+      options.compilerArgs.add("-Xlint:deprecation")
+    }
+  }
 }
