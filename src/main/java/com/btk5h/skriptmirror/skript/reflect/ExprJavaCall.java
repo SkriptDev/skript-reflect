@@ -768,11 +768,11 @@ public class ExprJavaCall<T> implements Expression<T> {
    * if making the given member accessible failed. <br>
    * If the super member was successfully made accessible, the super member is returned.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "deprecation"})
   @Nullable
   private static <T extends AccessibleObject> T getAccess(T member) {
     try {
-      if (!member.canAccess(member)) // TODO not sure if this is correct
+      if (!member.isAccessible())
         member.setAccessible(true);
       return member;
     } catch (RuntimeException e) {
