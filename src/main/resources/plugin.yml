@@ -2,7 +2,7 @@ name: skript-reflect
 version: @version@
 description: Reflection utilities for Skript.
 authors: [Bryan Terce <bryan.terce@gmail.com>, TPGamesNL, 'SkriptLang Team']
-website: https://github.com/SkriptLang/skript-reflect
+website: https://github.com/SkriptDev/skript-reflect
 api-version: 1.13
 
 main: com.btk5h.skriptmirror.SkriptMirror
