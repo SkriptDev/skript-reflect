@@ -38,6 +38,7 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Executable;
+import java.lang.reflect.InaccessibleObjectException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -150,7 +151,7 @@ public class ExprJavaCall<T> implements Expression<T> {
         break;
       case 1:
         type = (parseResult.mark & 1) == 1 ? CallType.METHOD : CallType.FIELD;
-        String desc = parseResult.regexes.get(0).group();
+        String desc = parseResult.regexes.getFirst().group();
 
         try {
           staticDescriptor = Descriptor.parse(desc, script);
@@ -176,7 +177,7 @@ public class ExprJavaCall<T> implements Expression<T> {
           return false;
         }
 
-        if (staticDescriptor.getJavaClass() != null && getCallSite(staticDescriptor).size() == 0) {
+        if (staticDescriptor.getJavaClass() != null && getCallSite(staticDescriptor).isEmpty()) {
           String name = staticDescriptor.getName();
           if (Stream.of(staticDescriptor.getJavaClass().getClasses())
               .map(Class::getSimpleName)
@@ -468,7 +469,7 @@ public class ExprJavaCall<T> implements Expression<T> {
 
     Optional<MethodHandle> method = findCompatibleMethod(descriptor, argumentsCopy);
 
-    if (!method.isPresent()) {
+    if (method.isEmpty()) {
       error(String.format("No matching %s %s: %s%s",
         isStatic ? "static" : "non-static", type, descriptor.toString(isStatic), argumentsMessage(arguments)));
 
@@ -679,7 +680,7 @@ public class ExprJavaCall<T> implements Expression<T> {
                 .map(Class::getTypeName)
                 .collect(Collectors.joining(","))
         )
-        .collect(Collectors.toList());
+        .toList();
 
     if (!matches.isEmpty()) {
       directError("Did you pass the wrong parameters? Here are the parameter signatures for the "
@@ -700,7 +701,7 @@ public class ExprJavaCall<T> implements Expression<T> {
 
     List<Member> matchingMembers = new ArrayList<>();
 
-    outer: for (Member member : members.collect(Collectors.toList())) {
+    outer: for (Member member : members.toList()) {
       String name = member.getName();
       if (name.equals(guess) && isStatic == isStatic(member))
         continue;
@@ -726,27 +727,19 @@ public class ExprJavaCall<T> implements Expression<T> {
   }
 
   private Stream<? extends Executable> getExecutables(Class<?> javaClass) {
-    switch (type) {
-      case METHOD:
-        return JavaUtil.methods(javaClass);
-      case CONSTRUCTOR:
-        return JavaUtil.constructors(javaClass);
-      default:
-        throw new IllegalStateException();
-    }
+    return switch (type) {
+      case METHOD -> JavaUtil.methods(javaClass);
+      case CONSTRUCTOR -> JavaUtil.constructors(javaClass);
+      default -> throw new IllegalStateException();
+    };
   }
 
   private Stream<? extends Member> getMembers(Class<?> javaClass) {
-    switch (type) {
-      case FIELD:
-        return JavaUtil.fields(javaClass);
-      case METHOD:
-        return JavaUtil.methods(javaClass);
-      case CONSTRUCTOR:
-        return JavaUtil.constructors(javaClass);
-      default:
-        throw new IllegalStateException();
-    }
+    return switch (type) {
+      case FIELD -> JavaUtil.fields(javaClass);
+      case METHOD -> JavaUtil.methods(javaClass);
+      case CONSTRUCTOR -> JavaUtil.constructors(javaClass);
+    };
   }
 
   private String argumentsMessage(Object... arguments) {
@@ -779,12 +772,12 @@ public class ExprJavaCall<T> implements Expression<T> {
   @Nullable
   private static <T extends AccessibleObject> T getAccess(T member) {
     try {
-      if (!member.isAccessible())
+      if (!member.canAccess(member)) // TODO not sure if this is correct
         member.setAccessible(true);
       return member;
     } catch (RuntimeException e) {
       // InaccessibleObjectException exists in Java 9+ only
-      if (e instanceof SecurityException || e.getClass().getName().equals("java.lang.reflect.InaccessibleObjectException")) {
+      if (e instanceof SecurityException || e instanceof InaccessibleObjectException) {
         Member superMember = getSuperMember((Member) member);
         return superMember != null ? getAccess((T) superMember) : null;
       }
@@ -798,9 +791,8 @@ public class ExprJavaCall<T> implements Expression<T> {
    */
   @Nullable
   private static Member getSuperMember(Member member) {
-    if (!(member instanceof Method))
+    if (!(member instanceof Method method))
       return null;
-    Method method = (Method) member;
     if (isStatic(method))
       return null;
 
@@ -845,16 +837,15 @@ public class ExprJavaCall<T> implements Expression<T> {
 
   @Override
   public String toString(Event e, boolean debug) {
-    switch (type) {
-      case FIELD:
-        return "" + rawTarget.toString(e, debug) + "." + staticDescriptor.getName();
-      case METHOD:
-        return "" + rawTarget.toString(e, debug) + "." + staticDescriptor.getName() + "(" +
-          (rawArgs == null ? "" : rawArgs.toString(e, debug)) + ")";
-      case CONSTRUCTOR:
-        return "new " + rawTarget.toString(e, debug) + "(" +  (rawArgs == null ? "" : rawArgs.toString(e, debug)) + ")";
-    }
-    return null;
+    return switch (type) {
+      case FIELD ->
+          rawTarget.toString(e, debug) + "." + staticDescriptor.getName();
+      case METHOD ->
+          rawTarget.toString(e, debug) + "." + staticDescriptor.getName() + "(" +
+              (rawArgs == null ? "" : rawArgs.toString(e, debug)) + ")";
+      case CONSTRUCTOR ->
+          "new " + rawTarget.toString(e, debug) + "(" + (rawArgs == null ? "" : rawArgs.toString(e, debug)) + ")";
+    };
   }
 
   @Override
