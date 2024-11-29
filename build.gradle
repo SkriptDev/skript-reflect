@@ -13,12 +13,6 @@ repositories {
   mavenCentral()
   // Paper
   maven { url 'https://repo.papermc.io/repository/maven-public/' }
-  maven {
-    url 'https://oss.sonatype.org/content/groups/public/'
-  }
-  maven {
-    url 'https://repo.destroystokyo.com/repository/maven-public/'
-  }
   // JitPack
   maven { url 'https://jitpack.io' }
 }
